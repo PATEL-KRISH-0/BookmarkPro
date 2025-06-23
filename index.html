@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookmarkPro - Advanced Bookmark Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app">
+        <!-- Top Navigation -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="ri-bookmark-3-fill"></i>
+                <span>BookmarkPro - <a href="https://www.linkedin.com/in/patelkrish0/">made by krish ❤</a></span>
+            </div>
+            
+            <div class="nav-search">
+                <i class="ri-search-line"></i>
+                <input type="text" id="globalSearch" placeholder="Search bookmarks, tags, or URLs..." autocomplete="off">
+                <div class="search-filters">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="favorites">★</button>
+                    <button class="filter-btn" data-filter="recent">Recent</button>
+                    <button class="filter-btn" data-filter="unread">Unread</button>
+                </div>
+            </div>
+
+            <div class="nav-actions">
+                <button class="nav-btn" id="bulkImportBtn" title="Bulk Import">
+                    <i class="ri-file-upload-line"></i>
+                </button>
+                <button class="nav-btn" id="exportBtn" title="Export All">
+                    <i class="ri-download-line"></i>
+                </button>
+                <button class="nav-btn" id="settingsBtn" title="Settings">
+                    <i class="ri-settings-3-line"></i>
+                </button>
+                <button class="nav-btn primary" id="quickAddBtn" title="Quick Add">
+                    <i class="ri-add-line"></i>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <div class="section-header">
+                        <h3>Collections</h3>
+                        <button class="add-btn" id="addCollectionBtn">
+                            <i class="ri-add-line"></i>
+                        </button>
+                    </div>
+                    <div class="collections-list" id="collectionsList">
+                        <div class="collection-item active" data-collection="all">
+                            <i class="ri-folder-line"></i>
+                            <span>All Bookmarks</span>
+                            <span class="count" id="allCount">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="section-header">
+                        <h3>Smart Folders</h3>
+                    </div>
+                    <div class="smart-folders">
+                        <div class="collection-item" data-collection="favorites">
+                            <i class="ri-star-fill"></i>
+                            <span>Favorites</span>
+                            <span class="count" id="favCount">0</span>
+                        </div>
+                        <div class="collection-item" data-collection="recent">
+                            <i class="ri-time-line"></i>
+                            <span>Recent</span>
+                            <span class="count" id="recentCount">0</span>
+                        </div>
+                        <div class="collection-item" data-collection="unread">
+                            <i class="ri-bookmark-line"></i>
+                            <span>Unread</span>
+                            <span class="count" id="unreadCount">0</span>
+                        </div>
+                        <div class="collection-item" data-collection="broken">
+                            <i class="ri-error-warning-line"></i>
+                            <span>Broken Links</span>
+                            <span class="count" id="brokenCount">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="section-header">
+                        <h3>Tags</h3>
+                        <button class="add-btn" id="manageTagsBtn">
+                            <i class="ri-price-tag-3-line"></i>
+                        </button>
+                    </div>
+                    <div class="tags-cloud" id="tagsCloud"></div>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="content">
+                <div class="content-header">
+                    <div class="breadcrumb">
+                        <span id="currentPath">All Bookmarks</span>
+                        <span class="item-count" id="itemCount">0 items</span>
+                    </div>
+                    
+                    <div class="view-controls">
+                        <div class="sort-dropdown">
+                            <button class="sort-btn" id="sortBtn">
+                                <i class="ri-sort-desc"></i>
+                                <span>Sort</span>
+                            </button>
+                            <div class="sort-menu" id="sortMenu">
+                                <button data-sort="title">Title A-Z</button>
+                                <button data-sort="date-desc">Newest First</button>
+                                <button data-sort="date-asc">Oldest First</button>
+                                <button data-sort="rating">Highest Rated</button>
+                                <button data-sort="visits">Most Visited</button>
+                            </div>
+                        </div>
+                        
+                        <div class="view-toggle">
+                            <button class="view-btn active" data-view="compact" title="Compact View">
+                                <i class="ri-list-check"></i>
+                            </button>
+                            <button class="view-btn" data-view="grid" title="Grid View">
+                                <i class="ri-grid-line"></i>
+                            </button>
+                            <button class="view-btn" data-view="table" title="Table View">
+                                <i class="ri-table-line"></i>
+                            </button>
+                            <button class="view-btn" data-view="containers" title="Containers View">
+                                <i class="ri-layout-grid-line"></i>
+                            </button>
+                        </div>
+                        
+                        <button class="bulk-select-btn" id="bulkSelectBtn">
+                            <i class="ri-checkbox-multiple-line"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bookmarks-container" id="bookmarksContainer">
+                    <div class="empty-state" id="emptyState">
+                        <i class="ri-bookmark-line"></i>
+                        <h3>No bookmarks found</h3>
+                        <p>Start building your collection</p>
+                        <button class="btn primary" onclick="document.getElementById('quickAddBtn').click()">
+                            Add Your First Bookmark
+                        </button>
+                    </div>
+                    <div class="bookmark-items" id="bookmarkItems"></div>
+                </div>
+
+                <!-- Bulk Actions Bar -->
+                <div class="bulk-actions" id="bulkActions">
+                    <div class="bulk-info">
+                        <span id="selectedCount">0</span> selected
+                    </div>
+                    <div class="bulk-buttons">
+                        <button class="bulk-btn" id="bulkMoveBtn">
+                            <i class="ri-folder-transfer-line"></i>
+                            Move
+                        </button>
+                        <button class="bulk-btn" id="bulkTagBtn">
+                            <i class="ri-price-tag-3-line"></i>
+                            Tag
+                        </button>
+                        <button class="bulk-btn" id="bulkExportBtn">
+                            <i class="ri-download-line"></i>
+                            Export
+                        </button>
+                        <button class="bulk-btn danger" id="bulkDeleteBtn">
+                            <i class="ri-delete-bin-line"></i>
+                            Delete
+                        </button>
+                    </div>
+                    <button class="bulk-close" id="bulkCloseBtn">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+            </main>
+
+
+        </div>
+    </div>
+
+    <!-- Quick Add Modal -->
+    <div class="modal-overlay" id="quickAddModal">
+        <div class="modal quick-add-modal">
+            <div class="modal-header">
+                <h3>Quick Add Bookmark</h3>
+                <button class="close-btn" data-modal="quickAddModal">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <form class="quick-add-form" id="quickAddForm">
+                <div class="url-input-group">
+                    <input type="url" id="quickUrl" placeholder="Paste URL here..." required>
+                    <button type="button" id="fetchMetaBtn" class="fetch-btn">
+                        <i class="ri-search-line"></i>
+                    </button>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="quickTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Collection</label>
+                        <select id="quickCollection"></select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Tags</label>
+                    <div class="tags-input" id="tagsInput">
+                        <input type="text" placeholder="Add tags..." id="tagInput">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Rating</label>
+                        <div class="rating-stars" id="quickRating">
+                            <button type="button" class="star" data-rating="1"><i class="ri-star-line"></i></button>
+                            <button type="button" class="star" data-rating="2"><i class="ri-star-line"></i></button>
+                            <button type="button" class="star" data-rating="3"><i class="ri-star-line"></i></button>
+                            <button type="button" class="star" data-rating="4"><i class="ri-star-line"></i></button>
+                            <button type="button" class="star" data-rating="5"><i class="ri-star-line"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="markAsRead">
+                            <span class="checkmark"></span>
+                            Mark as read
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn secondary" data-modal="quickAddModal">Cancel</button>
+                    <button type="submit" class="btn primary">Save Bookmark</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Advanced Edit Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal edit-modal">
+            <div class="modal-header">
+                <h3 id="editModalTitle">Edit Bookmark</h3>
+                <button class="close-btn" data-modal="editModal">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <form class="edit-form" id="editForm">
+                <div class="form-tabs">
+                    <button type="button" class="tab-btn active" data-tab="basic">Basic</button>
+                    <button type="button" class="tab-btn" data-tab="advanced">Advanced</button>
+                    <button type="button" class="tab-btn" data-tab="notes">Notes</button>
+                </div>
+
+                <div class="tab-content active" data-tab="basic">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="editTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label>URL</label>
+                        <input type="url" id="editUrl" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="editDescription" rows="3"></textarea>
+                    </div>
+                </div>
+
+                <div class="tab-content" data-tab="advanced">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Collection</label>
+                            <select id="editCollection"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Priority</label>
+                            <select id="editPriority">
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Tags</label>
+                        <div class="tags-input" id="editTagsInput">
+                            <input type="text" placeholder="Add tags..." id="editTagInput">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Rating</label>
+                            <div class="rating-stars" id="editRating">
+                                <button type="button" class="star" data-rating="1"><i class="ri-star-line"></i></button>
+                                <button type="button" class="star" data-rating="2"><i class="ri-star-line"></i></button>
+                                <button type="button" class="star" data-rating="3"><i class="ri-star-line"></i></button>
+                                <button type="button" class="star" data-rating="4"><i class="ri-star-line"></i></button>
+                                <button type="button" class="star" data-rating="5"><i class="ri-star-line"></i></button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="editIsRead">
+                                <span class="checkmark"></span>
+                                Mark as read
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" data-tab="notes">
+                    <div class="form-group">
+                        <label>Personal Notes</label>
+                        <textarea id="editNotes" rows="6" placeholder="Add your personal notes about this bookmark..."></textarea>
+                    </div>
+                    <div class="bookmark-stats">
+                        <div class="stat">
+                            <label>Created</label>
+                            <span id="createdDate">-</span>
+                        </div>
+                        <div class="stat">
+                            <label>Last Visited</label>
+                            <span id="lastVisited">-</span>
+                        </div>
+                        <div class="stat">
+                            <label>Visit Count</label>
+                            <span id="visitCount">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn danger" id="deleteBookmarkBtn">Delete</button>
+                    <div class="action-group">
+                        <button type="button" class="btn secondary" data-modal="editModal">Cancel</button>
+                        <button type="submit" class="btn primary">Save Changes</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Collection Modal -->
+    <div class="modal-overlay" id="collectionModal">
+        <div class="modal small-modal">
+            <div class="modal-header">
+                <h3 id="collectionModalTitle">New Collection</h3>
+                <button class="close-btn" data-modal="collectionModal">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <form class="collection-form" id="collectionForm">
+                <div class="form-group">
+                    <label>Collection Name</label>
+                    <input type="text" id="collectionName" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="collectionDescription" rows="2"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Color</label>
+                        <div class="color-picker">
+                            <input type="color" id="collectionColor" value="#3b82f6">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Icon</label>
+                        <select id="collectionIcon">
+                            <option value="ri-folder-line">📁 Folder</option>
+                            <option value="ri-briefcase-line">💼 Work</option>
+                            <option value="ri-heart-line">❤️ Personal</option>
+                            <option value="ri-book-line">📚 Learning</option>
+                            <option value="ri-gamepad-line">🎮 Entertainment</option>
+                            <option value="ri-shopping-bag-line">🛍️ Shopping</option>
+                            <option value="ri-code-line">💻 Development</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn danger" id="deleteCollectionBtn" style="display: none;">Delete Collection</button>
+                    <div class="action-group">
+                        <button type="button" class="btn secondary" data-modal="collectionModal">Cancel</button>
+                        <button type="submit" class="btn primary" id="saveCollectionBtn">Create Collection</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal settings-modal">
+            <div class="modal-header">
+                <h3>Settings</h3>
+                <button class="close-btn" data-modal="settingsModal">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <div class="settings-content">
+                <div class="settings-tabs">
+                    <button class="tab-btn active" data-tab="general">General</button>
+                    <button class="tab-btn" data-tab="appearance">Appearance</button>
+                    <button class="tab-btn" data-tab="import-export">Import/Export</button>
+                    <button class="tab-btn" data-tab="advanced">Advanced</button>
+                </div>
+
+                <div class="tab-content active" data-tab="general">
+                    <div class="setting-group">
+                        <h4>Behavior</h4>
+                        <div class="setting-item">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="openInNewTab" checked>
+                                <span class="checkmark"></span>
+                                Open bookmarks in new tab
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="autoFetchMeta" checked>
+                                <span class="checkmark"></span>
+                                Auto-fetch page metadata
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="enableNotifications">
+                                <span class="checkmark"></span>
+                                Enable notifications
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="autoBackup">
+                                <span class="checkmark"></span>
+                                Auto backup data weekly
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" data-tab="appearance">
+                    <div class="setting-group">
+                        <h4>Theme</h4>
+                        <div class="setting-item">
+                            <label>Theme</label>
+                            <select id="themeSelect">
+                                <option value="light">Light</option>
+                                <option value="dark">Dark</option>
+                                <option value="system">System</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="compactView" checked>
+                                <span class="checkmark"></span>
+                                Compact view by default
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label>Items per page</label>
+                            <select id="itemsPerPage">
+                                <option value="25">25</option>
+                                <option value="50" selected>50</option>
+                                <option value="100">100</option>
+                                <option value="200">200</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" data-tab="import-export">
+                    <div class="setting-group">
+                        <h4>Import Options</h4>
+                        <button class="btn secondary full-width" id="importJsonBtn">
+                            <i class="ri-file-upload-line"></i>
+                            Import from JSON
+                        </button>
+                        <button class="btn secondary full-width" id="importHtmlBtn">
+                            <i class="ri-html5-line"></i>
+                            Import from HTML (Browser Export)
+                        </button>
+                        <button class="btn secondary full-width" id="importCsvBtn">
+                            <i class="ri-file-excel-line"></i>
+                            Import from CSV
+                        </button>
+                    </div>
+                    
+                    <div class="setting-group">
+                        <h4>Export Options</h4>
+                        <button class="btn secondary full-width" id="exportJsonBtn">
+                            <i class="ri-download-line"></i>
+                            Export as JSON
+                        </button>
+                        <button class="btn secondary full-width" id="exportHtmlBtn">
+                            <i class="ri-html5-line"></i>
+                            Export as HTML
+                        </button>
+                        <button class="btn secondary full-width" id="exportCsvBtn">
+                            <i class="ri-file-excel-line"></i>
+                            Export as CSV
+                        </button>
+                    </div>
+                </div>
+
+                <div class="tab-content" data-tab="advanced">
+                    <div class="setting-group">
+                        <h4>Data Management</h4>
+                        <div class="setting-item">
+                            <label>Storage Usage</label>
+                            <div class="storage-info">
+                                <div class="storage-bar">
+                                    <div class="storage-used" id="storageUsed"></div>
+                                </div>
+                                <span id="storageText">0 KB used</span>
+                            </div>
+                        </div>
+                        <button class="btn secondary full-width" id="exportBackupBtn">
+                            <i class="ri-download-cloud-line"></i>
+                            Create Backup
+                        </button>
+                        <button class="btn danger full-width" id="clearAllBtn">
+                            <i class="ri-delete-bin-line"></i>
+                            Clear All Data
+                        </button>
+                    </div>
+                    
+                    <div class="setting-group">
+                        <h4>Debug</h4>
+                        <div class="setting-item">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="enableDebug">
+                                <span class="checkmark"></span>
+                                Enable debug mode
+                            </label>
+                        </div>
+                        <button class="btn secondary full-width" id="showDebugInfo">
+                            <i class="ri-information-line"></i>
+                            Show Debug Info
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Context Menu -->
+    <div class="context-menu" id="contextMenu">
+        <button class="context-item" data-action="open">
+            <i class="ri-external-link-line"></i>
+            Open
+        </button>
+        <button class="context-item" data-action="open-new">
+            <i class="ri-external-link-fill"></i>
+            Open in New Tab
+        </button>
+        <div class="context-divider"></div>
+        <button class="context-item" data-action="edit">
+            <i class="ri-edit-line"></i>
+            Edit
+        </button>
+        <button class="context-item" data-action="copy-url">
+            <i class="ri-clipboard-line"></i>
+            Copy URL
+        </button>
+        <button class="context-item" data-action="copy-title">
+            <i class="ri-text"></i>
+            Copy Title
+        </button>
+        <div class="context-divider"></div>
+        <button class="context-item" data-action="favorite">
+            <i class="ri-star-line"></i>
+            Toggle Favorite
+        </button>
+        <button class="context-item" data-action="move">
+            <i class="ri-folder-transfer-line"></i>
+            Move to Collection
+        </button>
+        <div class="context-divider"></div>
+        <button class="context-item danger" data-action="delete">
+            <i class="ri-delete-bin-line"></i>
+            Delete
+        </button>
+    </div>
+
+    <!-- Collection Context Menu -->
+    <div class="context-menu" id="collectionContextMenu">
+        <button class="context-item" data-action="edit-collection">
+            <i class="ri-edit-line"></i>
+            Edit Collection
+        </button>
+        <button class="context-item" data-action="export-collection">
+            <i class="ri-download-line"></i>
+            Export Collection
+        </button>
+        <div class="context-divider"></div>
+        <button class="context-item danger" data-action="delete-collection">
+            <i class="ri-delete-bin-line"></i>
+            Delete Collection
+        </button>
+    </div>
+
+    <!-- File Inputs -->
+    <input type="file" id="importJsonFile" accept=".json" style="display: none;">
+    <input type="file" id="importHtmlFile" accept=".html" style="display: none;">
+    <input type="file" id="importCsvFile" accept=".csv" style="display: none;">
+
+    <script src="script.js"></script>
+</body>
+</html>
