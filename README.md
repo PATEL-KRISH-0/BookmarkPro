@@ -32,15 +32,8 @@ Live Demo: [bookmarkpro-krish.netlify.app](https://bookmarkpro-krish.netlify.app
 ```bash
 📦 BookmarkPro
 ├── index.html
-├── styles/
-│   └── main.css
-├── scripts/
-│   └── app.js
-├── data/
-│   └── default.json
-├── assets/
-│   ├── icons/
-│   └── logos/
+├── main.css
+├── app.js
 └── README.md
 ```
 
@@ -71,7 +64,7 @@ Just open `index.html` in your browser. No build tools needed.
 
 ## 📝 Credits
 
-Developed with 💙 by [Krish](https://www.linkedin.com/in/yourprofile)
+Developed with 💙 by [Krish](https://www.linkedin.com/in/patelkrish0/)
 
 ---
 
